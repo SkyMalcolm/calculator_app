@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -22,10 +24,16 @@ fun CalculatorScreen() {
 
     val inputEditText = viewModel.inputText.collectAsState()
 
+    val inputTipEditText = viewModel.tipInputText.collectAsState()
+
     val tipTotal = viewModel.tipToString.collectAsState()
 
     val inputNumber: (String) -> Unit =  { inputString ->
         viewModel.updateInputText(inputString)
+    }
+
+    val inputTipNumber: (String) -> Unit = { inputString ->
+        viewModel.updateTipInputText(inputString)
     }
 
     Column(
@@ -43,10 +51,9 @@ fun CalculatorScreen() {
         InputNumberField(value = inputEditText.value, onValueChange = {
             inputNumber(it)
         })
-
-        Spacer(modifier = Modifier.height(30.dp))
-
-        PlusAndMinusButton()
+        TipInputNumberField(value = inputTipEditText.value, onValueChange = {
+            inputTipNumber(it)
+        })
 
         Spacer(modifier = Modifier.height(16.dp))
         Text(
@@ -73,7 +80,23 @@ fun InputNumberField(value: String, onValueChange: (String) -> Unit) {
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         singleLine = true
     )
+}
 
+@Composable
+fun TipInputNumberField(value: String, onValueChange: (String) -> Unit) {
+
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = {
+            Text(
+                text = stringResource(id = R.string.tip_percentage),
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        singleLine = true
+    )
 }
 
 @Composable
